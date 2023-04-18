@@ -180,8 +180,8 @@ struct MagicEntry {
 const ROOK_MAGICS: &[MagicEntry; Square::NUM] = todo!();
 const BISHOP_MAGICS: &[MagicEntry; Square::NUM] = todo!();
 
-const ROOK_MOVES: &[BitBoard; Square::NUM] = todo!();
-const BISHOP_MOVES: &[BitBoard; Square::NUM] = todo!();
+const ROOK_MOVES: &[BitBoard] = todo!();
+const BISHOP_MOVES: &[BitBoard] = todo!();
 
 fn magic_index(entry: &MagicEntry, blockers: BitBoard) -> usize {
     let blockers = blockers & entry.mask;
@@ -230,23 +230,23 @@ To understand how this works, consider enumerating subsets of the bitset `000011
 
 As an example, let's assume that `set` is `01001100`, and `subset` is `0000100`.
 The first step sets all bits that are *not* in `set`. `subset` is now:
-```custom-carry-ripple
-  F0FF00FF
-| f0ff01ff
- [F0FF01FF]
+```
+  10110011
+| 00000100
+ [10110111]
 ```
 Next, `subset` is incremented:
-```custom-carry-ripple
-  F0FF01FF
-+ f0ff00fF
- [F0FF10ff]
+```
+  10110111
++ 00000001
+ [10111000]
 ```
 Note how the last 4 bits change. The `1` ripples through the last 2 filler bits, as they have to be carried over to the next bit. Due to the filler bits, the carry always ripples through the unset bits in `set`.
 Finally, all bits that are not in `set` are cleared:
-```custom-carry-ripple
-  f0ff10ff
-& f1ff11ff
- [f0ff10ff]
+```
+  10111000
+& 01001100
+ [00001000]
 ```
 This unsets all filler bits, and what we're left with is the "next" subset of `set`.
 

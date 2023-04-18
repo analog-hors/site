@@ -141,8 +141,8 @@ Another important trick is that as the board is now made of nice and compact num
 </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">ROOK_MAGICS</span><span style="color:#c0c5ce;">: &amp;[MagicEntry; Square::</span><span style="color:#d08770;">NUM</span><span style="color:#c0c5ce;">] = todo!();
 </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">BISHOP_MAGICS</span><span style="color:#c0c5ce;">: &amp;[MagicEntry; Square::</span><span style="color:#d08770;">NUM</span><span style="color:#c0c5ce;">] = todo!();
 </span><span style="color:#c0c5ce;">
-</span><span style="color:#b48ead;">const </span><span style="color:#d08770;">ROOK_MOVES</span><span style="color:#c0c5ce;">: &amp;[BitBoard; Square::</span><span style="color:#d08770;">NUM</span><span style="color:#c0c5ce;">] = todo!();
-</span><span style="color:#b48ead;">const </span><span style="color:#d08770;">BISHOP_MOVES</span><span style="color:#c0c5ce;">: &amp;[BitBoard; Square::</span><span style="color:#d08770;">NUM</span><span style="color:#c0c5ce;">] = todo!();
+</span><span style="color:#b48ead;">const </span><span style="color:#d08770;">ROOK_MOVES</span><span style="color:#c0c5ce;">: &amp;[BitBoard] = todo!();
+</span><span style="color:#b48ead;">const </span><span style="color:#d08770;">BISHOP_MOVES</span><span style="color:#c0c5ce;">: &amp;[BitBoard] = todo!();
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">magic_index</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">entry</span><span style="color:#c0c5ce;">: &amp;MagicEntry, </span><span style="color:#bf616a;">blockers</span><span style="color:#c0c5ce;">: BitBoard) -&gt; </span><span style="color:#b48ead;">usize </span><span style="color:#c0c5ce;">{
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> blockers = blockers &amp; entry.mask;
@@ -185,20 +185,20 @@ Another important trick is that as the board is now made of nice and compact num
 <p>To understand how this works, consider enumerating subsets of the bitset <code>00001111</code>. As all bits are contiguous, one can simply enumerate its subsets by counting from <code>00000000</code> to <code>00001111</code>. The carry-rippler extends this idea to non-contiguous sets by first filling in all bits that are <em>not</em> in the set. This bridges the gap between bits in the set, allowing carry bits to ripple through as if the set were contiguous. It then increments as usual before clearing all filler bits set in the first step.</p>
 <p>As an example, let's assume that <code>set</code> is <code>01001100</code>, and <code>subset</code> is <code>0000100</code>.
 The first step sets all bits that are <em>not</em> in <code>set</code>. <code>subset</code> is now:</p>
-<pre style="background-color:#2b303b;"><code class="language-custom-carry-ripple"><span style="color:#c0c5ce;">  F0FF00FF
-</span><span style="color:#c0c5ce;">| f0ff01ff
-</span><span style="color:#c0c5ce;"> [F0FF01FF]
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">  10110011
+</span><span style="color:#c0c5ce;">| 00000100
+</span><span style="color:#c0c5ce;"> [10110111]
 </span></code></pre>
 <p>Next, <code>subset</code> is incremented:</p>
-<pre style="background-color:#2b303b;"><code class="language-custom-carry-ripple"><span style="color:#c0c5ce;">  F0FF01FF
-</span><span style="color:#c0c5ce;">+ f0ff00fF
-</span><span style="color:#c0c5ce;"> [F0FF10ff]
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">  10110111
+</span><span style="color:#c0c5ce;">+ 00000001
+</span><span style="color:#c0c5ce;"> [10111000]
 </span></code></pre>
 <p>Note how the last 4 bits change. The <code>1</code> ripples through the last 2 filler bits, as they have to be carried over to the next bit. Due to the filler bits, the carry always ripples through the unset bits in <code>set</code>.
 Finally, all bits that are not in <code>set</code> are cleared:</p>
-<pre style="background-color:#2b303b;"><code class="language-custom-carry-ripple"><span style="color:#c0c5ce;">  f0ff10ff
-</span><span style="color:#c0c5ce;">&amp; f1ff11ff
-</span><span style="color:#c0c5ce;"> [f0ff10ff]
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">  10111000
+</span><span style="color:#c0c5ce;">&amp; 01001100
+</span><span style="color:#c0c5ce;"> [00001000]
 </span></code></pre>
 <p>This unsets all filler bits, and what we're left with is the &quot;next&quot; subset of <code>set</code>.</p>
 <p>The expanded form can be reduced into its reduced form. The first OR can be replaced with an addition, as the unused bits are always 0.</p>
