@@ -1,5 +1,6 @@
 ---
 title: "Analog Hors"
+page_title: "Analog Hors"
 ---
 
 code horse.

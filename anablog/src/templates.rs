@@ -10,7 +10,10 @@ pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&s
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
-                title { "Analog Hors - " (page_title.unwrap_or(title)) }
+                @match page_title {
+                    Some(page_title) => title { (page_title) },
+                    None => title { "Analog Hors - " (title) },
+                }
                 link href="../shared/base.css" rel="stylesheet";
                 link rel="preconnect" href="https://fonts.googleapis.com";
                 link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="";
