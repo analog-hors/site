@@ -39,6 +39,8 @@ pre > code {
 #content pre {
     padding-left: 1em;
     padding-right: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
     overflow-x: scroll;
     scrollbar-color: #F4C8F9 #1E1A21;
     scrollbar-width: thin;

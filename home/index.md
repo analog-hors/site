@@ -1,4 +1,7 @@
-# Analog Hors
+---
+title: "Analog Hors"
+---
+
 code horse.
 
 I work primarily in Rust, but have done some stuff in Typescript, Javascript, C#, Java, and Python. Currently primarily interested in Chess related code.

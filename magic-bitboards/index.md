@@ -1,4 +1,11 @@
-# Magical Bitboards and How to Find Them: Sliding move generation in chess
+---
+title: "Magical Bitboards and How to Find Them: Sliding move generation in chess"
+post:
+  author: "Analog Hors"
+  date: "2022-09-24"
+  desc: "An article aiming to thoroughly explain the magic bitboard algorithm as applied to Chess sliding move generation."
+---
+
 A common problem in chess programming is how to efficiently generate moves for sliding pieces. Bishops, rooks, and queens move along rays which can be obstructed:
 
 <img src="img/slider_demo_board.svg" style="width: 50%;" alt="8/2p1pk2/3p2rp/8/1P2R3/PK4P1/7P/8 w - - 0 1">

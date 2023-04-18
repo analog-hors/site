@@ -1,4 +1,6 @@
-# Projects
+---
+title: "Projects"
+---
 
 Yeah turns out I've done quite a few of these huh. I'm quite proud of some of these ones.
 

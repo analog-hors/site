@@ -1,34 +1,9 @@
-<!DOCTYPE html><html lang="en"><head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Writing a NES emulator: Part 1 - The 6502 CPU</title>
-        <link href="../shared/base.css" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
-        <link href="./favicon.svg" rel="icon">
-    </head>
-    <body>
-        <header>
-            <code>
-                <!-- Me when the, when the HTML, *dies* -->
-                <a href="../home/">analog-hors</a><!--
-             -->&nbsp;-&nbsp;<!--
-             --><a href="../projects/">projects</a><!--
-             -->&nbsp;-&nbsp;<!--
-             --><a href="../writings">writing</a><!--
-             -->
-            </code>
-        </header>
-        <div id="content-container">
-            <div id="content"><h1>Writing a NES emulator: Part 1 - The 6502 CPU</h1>
-<p>After an immense amount of time of not sticking with a project, I finally decided to pick up writing an NES emulator again, a project which I dropped years ago. You can find the codebase <a href="https://github.com/analog-hors/pones">here</a>. I'm not really sure I'll pull through with it this time, but I <em>did</em> get the CPU implemented: The ubiquitous <a href="https://en.wikipedia.org/wiki/MOS_Technology_6502">MOS Technology 6502</a>. Released in 1975, this piece of silicon found its way into some of the most influential consumer electronics of the 80s, with the Atari 2600, NES, Commodore 64, and Apple II all containing either the 6502 itself or one of its many variants. It should therefore be rather well documented, and it seems like a reasonable starting point for emulation. The NES was chosen rather arbitrarily, but it seemed like a good mix of approachable and "cool".</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Analog Hors - Writing an NES emulator: Part 1 - The 6502 CPU</title><link href="../shared/base.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet"><link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet"><link href="./favicon.svg" rel="icon"></head><body><header><code><a href="../home/">analog-hors</a>&nbsp;-&nbsp;<a href="../projects/">projects</a>&nbsp;-&nbsp;<a href="../writing">writing</a></code></header><div id="content-container"><div id="content"><h1>Writing an NES emulator: Part 1 - The 6502 CPU</h1><p><i class="fa-regular fa-user"></i> Analog Hors&nbsp;&nbsp;&nbsp;<i class="fa-regular fa-clock"></i> 2023-04-02</p><p>After an immense amount of time of not sticking with a project, I finally decided to pick up writing an NES emulator again, a project which I dropped years ago. You can find the codebase <a href="https://github.com/analog-hors/pones">here</a>. I'm not really sure I'll pull through with it this time, but I <em>did</em> get the CPU implemented: The ubiquitous <a href="https://en.wikipedia.org/wiki/MOS_Technology_6502">MOS Technology 6502</a>. Released in 1975, this piece of silicon found its way into some of the most influential consumer electronics of the 80s, with the Atari 2600, NES, Commodore 64, and Apple II all containing either the 6502 itself or one of its many variants. It should therefore be rather well documented, and it seems like a reasonable starting point for emulation. The NES was chosen rather arbitrarily, but it seemed like a good mix of approachable and &quot;cool&quot;.</p>
 <p>A robust 6502 emulation core is key to emulating many systems, so it's a natural place to start. I didn't have any idea how to begin with <em>that</em> though, so I picked the most sensible place to start: attempting to decode the instructions. Let's check <a href="https://www.nesdev.org/wiki/CPU_unofficial_opcodes">NesDev</a>:</p>
 <img src="img/6502-opcode-table.png" style="width: 100%;" alt="The 6502 opcode table">
 <p>Um, okay. What's... <a href="https://www.masswerk.at/6502/6502_instruction_set.html#ADC"><code>ADC a,x</code></a>?</p>
 <blockquote>
-<pre style="background-color:#2b303b;"><code>
-<span style="color:#c0c5ce;">ADC Add Memory to Accumulator with Carry
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">ADC Add Memory to Accumulator with Carry
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">    A + M + C -&gt; A, C                N Z C I D V
 </span><span style="color:#c0c5ce;">                                     + + + - - +
@@ -41,8 +16,7 @@
 </span><span style="color:#c0c5ce;">    absolute,Y    ADC oper,Y    79   3      4* 
 </span><span style="color:#c0c5ce;">    (indirect,X)  ADC (oper,X)  61   2      6  
 </span><span style="color:#c0c5ce;">    (indirect),Y  ADC (oper),Y  71   2      5* 
-</span>
-</code></pre>
+</span></code></pre>
 </blockquote>
 <p>Accumulator? Carry? Addressing?</p>
 <p>Okay, never mind, that was a bad idea. Of course understanding the opcode table would require understanding the 6502's architecture in the first place; They all operate within that context. Studying that first is probably a more reasonable starting point.</p>
@@ -52,8 +26,7 @@
 <p><em>Like its precursor, the 6800, the 6502 has very few registers. The 6502's registers include one 8-bit accumulator register (A), two 8-bit index registers (X and Y), 7 processor status flag bits (P; from bit 7 to bit 0 these are the negative (N), overflow (V), reserved, break (B), decimal (D), interrupt disable (I), zero (Z) and carry (C) flag), an 8-bit stack pointer (S), and a 16-bit program counter (PC).</em></p>
 </blockquote>
 <p>Sounds simple enough. Initial code:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">pub trait </span><span style="color:#c0c5ce;">Bus {
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">pub trait </span><span style="color:#c0c5ce;">Bus {
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">read</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">addr</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">) -&gt; </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">write</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">addr</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">value</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">}
@@ -79,8 +52,7 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">sp</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">pc</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p><code>Bus</code> just represents the external interface from the CPU to memory or memory-mapped hardware. I haven't actually mentioned anything about the <code>Bus</code> trait so far, and that's because I just assumed it would work like that based on some vague background knowledge I had on the 6502 from years ago. <a href="https://en.wikipedia.org/wiki/Bus_(computing)">Wikipedia backs me up though</a>.</p>
 <p>As for the instructions:</p>
 <blockquote>
@@ -105,29 +77,27 @@
 <p>Here, an opcode's row describes the upper 3 bits, while its column describes the lower 5 bits. For example, <code>JMP a</code> is <code>$60 + $0C = $6C</code>. You might recall that 6502 opcodes have 3 parts arranged like <code>AAABBBCC</code>, and the table does indeed make more sense if you account for this information. Grouping opcodes with the same <code>CC</code> bits puts similar opcodes together:</p>
 <img src="img/6502-opcode-table-grouped.png" style="width: 100%;" alt="The 6502 opcode table grouped according to the lower 2 bits">
 <p>The red, green, blue, and grey opcodes have the bit patterns <code>0b00</code> (0), <code>0b01</code> (1), <code>0b10</code> (2), and <code>0b11</code> (3) as their <code>CC</code> bits respectively.</p>
-<p>The opcodes in the red group are generally control flow related. The green opcodes are ALU opcodes, and primarily relate to the <code>a</code> register. Opcodes in the blue group are read-modify-write opcodes, and the grey group is comprised entirely of "illegal" opcodes. In fact, all bolded entries are illegal - Of the 256 possible opcodes, only 151 are documented. Illegal opcodes aren't meant to be used, but they don't do nothing either, and a truly accurate emulator must implement them. I opted to avoid them for now because very few NES games used illegal opcodes.</p>
+<p>The opcodes in the red group are generally control flow related. The green opcodes are ALU opcodes, and primarily relate to the <code>a</code> register. Opcodes in the blue group are read-modify-write opcodes, and the grey group is comprised entirely of &quot;illegal&quot; opcodes. In fact, all bolded entries are illegal - Of the 256 possible opcodes, only 151 are documented. Illegal opcodes aren't meant to be used, but they don't do nothing either, and a truly accurate emulator must implement them. I opted to avoid them for now because very few NES games used illegal opcodes.</p>
 <p>The text following an opcode's three letter mnemonic describes that opcode's addressing mode. It took me some guesswork to figure out what they mean:</p>
-<pre style="background-color:#2b303b;"><code>
-<span style="color:#c0c5ce;">types:
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">types:
 </span><span style="color:#c0c5ce;">a   - absolute address (2 bytes)
 </span><span style="color:#c0c5ce;">#i  - immediate value (1 byte)
 </span><span style="color:#c0c5ce;">d   - zero page address (1 byte)
 </span><span style="color:#c0c5ce;">*+d - relative address (1 byte)
-</span><span style="color:#c0c5ce;">y   - the y register (0 bytes, as it's implied)
-</span><span style="color:#c0c5ce;">x   - the x register (0 bytes, as it's implied)
+</span><span style="color:#c0c5ce;">y   - the y register (0 bytes, as it&#39;s implied)
+</span><span style="color:#c0c5ce;">x   - the x register (0 bytes, as it&#39;s implied)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">syntax:
 </span><span style="color:#c0c5ce;">($a)  - absolute address at $a (dereference)
 </span><span style="color:#c0c5ce;">$l,$r - add $l and $r
-</span>
-</code></pre>
+</span></code></pre>
 <p>Some notes about the types:</p>
 <ul>
 <li>
 <p>Absolute addresses are normal 2-byte addresses, and there isn't anything particularly special about them.</p>
 </li>
 <li>
-<p>Immediate values pertain to immediate mode addressing, where the data is contained directly after the opcode. For example, <code>LDA #0</code> loads the value <code>0</code> into the register <code>a</code>. Immediate mode addressing can be understood as "the address of opcode's operand".</p>
+<p>Immediate values pertain to immediate mode addressing, where the data is contained directly after the opcode. For example, <code>LDA #0</code> loads the value <code>0</code> into the register <code>a</code>. Immediate mode addressing can be understood as &quot;the address of opcode's operand&quot;.</p>
 </li>
 <li>
 <p>Zero page addresses are special 1-byte addresses only capable of addressing the first 256 bytes (the zero page). The 6502 treats a zero page address as an absolute address with a high byte of <code>$00</code>. They are faster than absolute addresses because the CPU does not need to fetch the high byte, and somewhat compensate for the 6502's extremely limited register count. Note that zero page addresses are still fundamentally 8-bit, and are subject to 8-bit wraparound: <code>d,x</code> where <code>d = $FF</code> and <code>x = $01</code> wraps to <code>$00</code> and accesses <code>$0000</code>.</p>
@@ -140,8 +110,7 @@
 <p>Now armed with the knowledge of the 6502's architecture and how its instructions were encoded, I went straight ahead to implementing the opcodes.</p>
 <h2>The initial implementation</h2>
 <p>Given the patterns in the 6502's opcode table, my initial idea was to split up the opcodes into 3 parts according to <code>AAABBBCC</code> and <code>match</code> on a tuple of them, which looked something like</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">impl</span><span style="color:#c0c5ce;">&lt;B: Bus&gt; Cpu6502&lt;B&gt; {
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">impl</span><span style="color:#c0c5ce;">&lt;B: Bus&gt; Cpu6502&lt;B&gt; {
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// ...
 </span><span style="color:#c0c5ce;">
@@ -157,11 +126,9 @@
 </span><span style="color:#c0c5ce;">        }
 </span><span style="color:#c0c5ce;">    }
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>The main idea was that I'd be able to use different match arms to match on patterns in the opcode table to deduplicate code, while still being flexible enough to add special cases. For example, <code>BRK</code> was decoded using a simple constant pattern, while the ALU operations used more complex logic to take advantage of the opcode layout:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">match </span><span style="color:#c0c5ce;">(aaa, bbb, cc) {
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">match </span><span style="color:#c0c5ce;">(aaa, bbb, cc) {
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// ...
 </span><span style="color:#c0c5ce;">
@@ -233,12 +200,10 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// ...
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>To help implement the logic, I copied the HTML for <a href="https://www.nesdev.org/wiki/CPU_unofficial_opcodes">the opcode table from NesDev</a>, parsed it, and generated match arms for decoding the opcodes, sorted by group. Very hacky, but it's a one-off job.</p>
 <p>I also had to figure out a nice way for an opcode to read its operands, and opted to use helper functions:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">take_byte_at_pc</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) -&gt; </span><span style="color:#b48ead;">u8 </span><span style="color:#c0c5ce;">{
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">take_byte_at_pc</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) -&gt; </span><span style="color:#b48ead;">u8 </span><span style="color:#c0c5ce;">{
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> byte = </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">read_byte</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.pc);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.pc = </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.pc.</span><span style="color:#96b5b4;">wrapping_add</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">    byte
@@ -304,8 +269,7 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> addr = </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">take_zero_page</span><span style="color:#c0c5ce;">() as </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">read_absolute</span><span style="color:#c0c5ce;">(addr).</span><span style="color:#96b5b4;">wrapping_add</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.y as </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">)
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>After that, it was fairly straightforward to implement the instructionss with the help of <a href="http://6502.org/tutorials/6502opcodes.html">6502.org</a> and <a href="https://www.masswerk.at/6502/6502_instruction_set.html">Masswerk</a>.</p>
 <p>Some things I encountered while implementing the emulator:</p>
 <ul>
@@ -324,10 +288,9 @@
 </ul>
 <h2>Testing the emulator</h2>
 <p>After I finished writing the initial code, I started looking for some test binaries. I ended up implementing <code>6502_functional_test.a65</code>, <code>6502_interrupt_test.a65</code>, and <code>6502_decimal_test.a65</code> from <a href="https://github.com/Klaus2m5/6502_65C02_functional_tests/">Klaus Dormann's test suite</a>. Annoyingly, the binaries in the <code>bin_files</code> directory were outdated and only contained two test suites anyway. For some reason the provided assembler's Linux binary didn't run either so I ended up running it through Wine. The test code itself is pretty simple:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">load_mem</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">str</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">start_addr</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">) -&gt; Memory {
-</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> path = format!("</span><span style="color:#a3be8c;">tests/</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">", name);
-</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> bin = std::fs::read(path).</span><span style="color:#96b5b4;">expect</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">failed to read test binary</span><span style="color:#c0c5ce;">");
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">load_mem</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">name</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">str</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">start_addr</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16</span><span style="color:#c0c5ce;">) -&gt; Memory {
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> path = format!(&quot;</span><span style="color:#a3be8c;">tests/</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;, name);
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> bin = std::fs::read(path).</span><span style="color:#96b5b4;">expect</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">failed to read test binary</span><span style="color:#c0c5ce;">&quot;);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> mem = [</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">; </span><span style="color:#d08770;">65536</span><span style="color:#c0c5ce;">];
 </span><span style="color:#c0c5ce;">    mem[start_addr as </span><span style="color:#b48ead;">usize</span><span style="color:#c0c5ce;">..start_addr as </span><span style="color:#b48ead;">usize </span><span style="color:#c0c5ce;">+ bin.</span><span style="color:#96b5b4;">len</span><span style="color:#c0c5ce;">()].</span><span style="color:#96b5b4;">copy_from_slice</span><span style="color:#c0c5ce;">(&amp;bin);
 </span><span style="color:#c0c5ce;">    Memory(mem)
@@ -339,7 +302,7 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">PROGRAM_START</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">0x0400</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">SUCCESS_TRAP</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">0x3469</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">
-</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">klaus/bin/6502_functional_test.bin</span><span style="color:#c0c5ce;">", </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">klaus/bin/6502_functional_test.bin</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> cpu = Cpu6502::new(mem);
 </span><span style="color:#c0c5ce;">    cpu.pc = </span><span style="color:#d08770;">PROGRAM_START</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">loop </span><span style="color:#c0c5ce;">{
@@ -349,7 +312,7 @@
 </span><span style="color:#c0c5ce;">            </span><span style="color:#b48ead;">break</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">        }
 </span><span style="color:#c0c5ce;">    }
-</span><span style="color:#c0c5ce;">    assert!(cpu.pc == </span><span style="color:#d08770;">SUCCESS_TRAP</span><span style="color:#c0c5ce;">, "</span><span style="color:#a3be8c;">trapped at {:#06X}</span><span style="color:#c0c5ce;">", cpu.pc);
+</span><span style="color:#c0c5ce;">    assert!(cpu.pc == </span><span style="color:#d08770;">SUCCESS_TRAP</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">trapped at {:#06X}</span><span style="color:#c0c5ce;">&quot;, cpu.pc);
 </span><span style="color:#c0c5ce;">}
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">test</span><span style="color:#c0c5ce;">]
@@ -361,7 +324,7 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">IRQ_BIT</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">1 </span><span style="color:#c0c5ce;">&lt;&lt; </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">NMI_BIT</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">1 </span><span style="color:#c0c5ce;">&lt;&lt; </span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">
-</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">klaus/bin/6502_interrupt_test.bin</span><span style="color:#c0c5ce;">", </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">klaus/bin/6502_interrupt_test.bin</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> cpu = Cpu6502::new(mem);
 </span><span style="color:#c0c5ce;">    cpu.pc = </span><span style="color:#d08770;">PROGRAM_START</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    cpu.bus.</span><span style="color:#96b5b4;">write</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">FEEDBACK_ADDR</span><span style="color:#c0c5ce;">, </span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">);
@@ -379,7 +342,7 @@
 </span><span style="color:#c0c5ce;">            </span><span style="color:#b48ead;">break</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">        }
 </span><span style="color:#c0c5ce;">    }
-</span><span style="color:#c0c5ce;">    assert!(cpu.pc == </span><span style="color:#d08770;">SUCCESS_TRAP</span><span style="color:#c0c5ce;">, "</span><span style="color:#a3be8c;">trapped at {:#06X}</span><span style="color:#c0c5ce;">", cpu.pc);
+</span><span style="color:#c0c5ce;">    assert!(cpu.pc == </span><span style="color:#d08770;">SUCCESS_TRAP</span><span style="color:#c0c5ce;">, &quot;</span><span style="color:#a3be8c;">trapped at {:#06X}</span><span style="color:#c0c5ce;">&quot;, cpu.pc);
 </span><span style="color:#c0c5ce;">}
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">test</span><span style="color:#c0c5ce;">]
@@ -389,38 +352,34 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">ERROR_ADDR</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">0x000B</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">const </span><span style="color:#d08770;">DONE_ADDR</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u16 </span><span style="color:#c0c5ce;">= </span><span style="color:#d08770;">0x024B</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">
-</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">decimal/bin/6502_decimal_test.bin</span><span style="color:#c0c5ce;">", </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> mem = </span><span style="color:#96b5b4;">load_mem</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">decimal/bin/6502_decimal_test.bin</span><span style="color:#c0c5ce;">&quot;, </span><span style="color:#d08770;">BIN_START_ADDR</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> cpu = Cpu6502::new(mem);
 </span><span style="color:#c0c5ce;">    cpu.pc = </span><span style="color:#d08770;">PROGRAM_START</span><span style="color:#c0c5ce;">;
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">while</span><span style="color:#c0c5ce;"> cpu.pc != </span><span style="color:#d08770;">DONE_ADDR </span><span style="color:#c0c5ce;">{
 </span><span style="color:#c0c5ce;">        cpu.</span><span style="color:#96b5b4;">step</span><span style="color:#c0c5ce;">();
 </span><span style="color:#c0c5ce;">    }
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">if</span><span style="color:#c0c5ce;"> cpu.bus.</span><span style="color:#96b5b4;">read</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">ERROR_ADDR</span><span style="color:#c0c5ce;">) != </span><span style="color:#d08770;">0 </span><span style="color:#c0c5ce;">{
-</span><span style="color:#c0c5ce;">        panic!("</span><span style="color:#a3be8c;">decimal mode test failed</span><span style="color:#c0c5ce;">");
+</span><span style="color:#c0c5ce;">        panic!(&quot;</span><span style="color:#a3be8c;">decimal mode test failed</span><span style="color:#c0c5ce;">&quot;);
 </span><span style="color:#c0c5ce;">    }
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
-<p>The functional and interrupt tests rely on "traps" to report their output, which is just an instruction that jumps to itself, halting execution. The decimal test just has a fixed address for the program end and an address containing the result. The actual mechanisms for running the functional and decimal tests are dead simple, but the interrupt test was extremely difficult to get working, because it relies on a feedback register at a certain memory address to allow the code to interrupt itself. No emulator I found online that implemented this test could actually agree on how you were supposed to interpret the feedback register, and I ended up trying out different combinations on an existing known-good 6502 emulator to get it to pass the test.</p>
+</span></code></pre>
+<p>The functional and interrupt tests rely on &quot;traps&quot; to report their output, which is just an instruction that jumps to itself, halting execution. The decimal test just has a fixed address for the program end and an address containing the result. The actual mechanisms for running the functional and decimal tests are dead simple, but the interrupt test was extremely difficult to get working, because it relies on a feedback register at a certain memory address to allow the code to interrupt itself. No emulator I found online that implemented this test could actually agree on how you were supposed to interpret the feedback register, and I ended up trying out different combinations on an existing known-good 6502 emulator to get it to pass the test.</p>
 <p>It also turns out that you can still pass tests if your read-modify-write instructions read from the accumulator instead of their target address. This is probably because the test binaries first store the value in the accumulator before writing it to the target address, and I only managed to catch this because I implemented an <a href="http://retro.hansotten.nl/6502-sbc/lee-davison-web-site/enhanced-6502-basic/">EhBasic</a> port for fun and noticed that it bugged out. I debugged this by producing traces of the CPU's registers and comparing them against existing emulators, which worked incredibly well and was probably something I should have started doing earlier into the development process.</p>
 <h2>Refining the code</h2>
 <p>I managed to get all the tests to pass, but I still wasn't really happy with a few aspects of the emulator.</p>
 <h3>Moving out the register handling code</h3>
 <p>The <code>Cpu6502</code> <code>impl</code> block was pretty cluttered, and a large part of it was due to a lot of helpers that operated only on the registers. Like I mentioned earlier, the <code>a</code>, <code>x</code>, and <code>y</code> registers are fairly intertwined with the flags, so I figured it would be worthwhile to move them out:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span style="color:#b48ead;">pub struct </span><span style="color:#c0c5ce;">RegisterState {
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">a</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">status</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <h3>Replacing the status register with bools</h3>
 <p>Despite the code implementing the status register as an 8-bit bitfield, the 6502 only has 6 true flags. Having 2 extra bits made the implementation kind of awkward, and it didn't really sit right with me that it could be an invalid state, so I just switched to 6 bools:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 </span><span style="color:#b48ead;">pub struct </span><span style="color:#c0c5ce;">RegisterState {
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">a</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
 </span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">pub </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">u8</span><span style="color:#c0c5ce;">,
@@ -476,36 +435,32 @@
 </span><span style="color:#c0c5ce;">        </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.negative = </span><span style="color:#96b5b4;">b</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">);
 </span><span style="color:#c0c5ce;">    }
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>This also made working with each flag simpler, which is a nice bonus.</p>
 <h3>Completely redoing instruction decoding</h3>
 <p>These were relatively small changes though, and my biggest problem was how cluttered the <code>step</code> function was. Fundamentally, the biggest issue was that it was too clever; It tried to deduplicate code by taking advantage of the opcode layout, but too many special cases meant that it was incredibly hard to parse. After some thinking, I figured that a simple 256 entry <code>match</code> wouldn't be too bad if each match arm was kept to one line. I also realized each opcode could be implemented as a function that took an address as an operand, and that that address could be calculated from the addressing mode information alone. I wrote some macro magic to implement this:</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#c0c5ce;">dispatch! {
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#c0c5ce;">dispatch! {
 </span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x00 </span><span style="color:#96b5b4;">brk_implied</span><span style="color:#c0c5ce;">()
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x01 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">(d,x)</span><span style="color:#c0c5ce;">")
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x01 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">(d,x)</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x02 stp_implied() // illegal
-</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x03 slo("(d,x)") // illegal
-</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x04 nop("d") // illegal
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x05 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">")
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x06 </span><span style="color:#96b5b4;">asl</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">")
-</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x07 slo("d") // illegal
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x03 slo(&quot;(d,x)&quot;) // illegal
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x04 nop(&quot;d&quot;) // illegal
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x05 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x06 </span><span style="color:#96b5b4;">asl</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">d</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x07 slo(&quot;d&quot;) // illegal
 </span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x08 </span><span style="color:#96b5b4;">php_implied</span><span style="color:#c0c5ce;">()
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x09 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">#i</span><span style="color:#c0c5ce;">")
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x09 </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">#i</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x0A </span><span style="color:#96b5b4;">asl_implied</span><span style="color:#c0c5ce;">()
-</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x0B anc("#i") // illegal
-</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x0C nop("a") // illegal
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x0D </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">a</span><span style="color:#c0c5ce;">")
-</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x0E </span><span style="color:#96b5b4;">asl</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">a</span><span style="color:#c0c5ce;">")
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x0B anc(&quot;#i&quot;) // illegal
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// 0x0C nop(&quot;a&quot;) // illegal
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x0D </span><span style="color:#96b5b4;">ora</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">a</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">    </span><span style="color:#d08770;">0x0E </span><span style="color:#96b5b4;">asl</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">a</span><span style="color:#c0c5ce;">&quot;)
 </span><span style="color:#c0c5ce;">
 </span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">// ...
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>which calls into functions like</p>
-<pre style="background-color:#2b303b;"><code class="language-rust">
-<span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">inx_implied</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) {
+<pre style="background-color:#2b303b;"><code class="language-rust"><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">inx_implied</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">) {
 </span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.reg.</span><span style="color:#96b5b4;">update_x</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.reg.x.</span><span style="color:#96b5b4;">wrapping_add</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">));
 </span><span style="color:#c0c5ce;">}
 </span><span style="color:#c0c5ce;">
@@ -526,8 +481,7 @@
 </span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.bus.</span><span style="color:#96b5b4;">write</span><span style="color:#c0c5ce;">(addr, result);
 </span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.reg.</span><span style="color:#96b5b4;">update_nz_flags</span><span style="color:#c0c5ce;">(result);
 </span><span style="color:#c0c5ce;">}
-</span>
-</code></pre>
+</span></code></pre>
 <p>The macro expands to a large <code>match</code> that then calls the handler function, optionally calculating an address based on a provided addressing mode. Converting the string to addressing mode code is just implemented with pattern matching in the macro. The macro arguably isn't necessary, but I felt that it matched the syntax of the assembler mnemonics closer, and it's also a bit hard to be compact otherwise, especially since Rust won't let you do something like <code>self.and(self.take_immediate())</code> if both functions are <code>&amp;mut self</code>. Overall, the macro is a little weird, but making the decoding significantly more straightforward massively helped with readability.</p>
 <h2>What next?</h2>
 <p>That's as far as I got this time. There are still some features my 6502 emulator is missing:</p>
@@ -537,8 +491,4 @@
 <li>Illegal opcodes</li>
 </ul>
 <p>For now though, I'm mostly happy with the 6502 implementation that I reached; I don't know quite yet what to approach next. The next primary goal is probably implementing actual NES things. I might get to it eventually or I might not, we'll see.</p>
-</div>
-        </div>
-    
-
-</body></html>
+</div></div></body></html>

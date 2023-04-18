@@ -1,37 +1,11 @@
-<!DOCTYPE html><html lang="en"><head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Projects</title>
-        <link href="../shared/base.css" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
-        <link href="./favicon.svg" rel="icon">
-    </head>
-    <body>
-        <header>
-            <code>
-                <!-- Me when the, when the HTML, *dies* -->
-                <a href="../home/">analog-hors</a><!--
-             -->&nbsp;-&nbsp;<!--
-             --><a href="../projects/">projects</a><!--
-             -->&nbsp;-&nbsp;<!--
-             --><a href="../writings">writing</a><!--
-             -->
-            </code>
-        </header>
-        <div id="content-container">
-            <div id="content"><h1>Projects</h1>
-<p>Yeah turns out I've done quite a few of these huh. I'm quite proud of some of these ones.</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Analog Hors - Projects</title><link href="../shared/base.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet"><link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet"><link href="./favicon.svg" rel="icon"></head><body><header><code><a href="../home/">analog-hors</a>&nbsp;-&nbsp;<a href="../projects/">projects</a>&nbsp;-&nbsp;<a href="../writing">writing</a></code></header><div id="content-container"><div id="content"><h1>Projects</h1><p>Yeah turns out I've done quite a few of these huh. I'm quite proud of some of these ones.</p>
 <h2><a href="https://github.com/analog-hors/cozy-chess"><code>cozy-chess</code></a></h2>
-<pre style="background-color:#2b303b;"><code>
-<span style="color:#c0c5ce;">$ cargo run --release --example perft -- 7
+<pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">$ cargo run --release --example perft -- 7
 </span><span style="color:#c0c5ce;">   Compiling cozy-chess v0.3.0
 </span><span style="color:#c0c5ce;">    Finished release [optimized] target(s) in 6.37s
 </span><span style="color:#c0c5ce;">     Running `target\release\examples\perft.exe 7`
 </span><span style="color:#c0c5ce;">3195901860 nodes in 10.05s (318045465 nps)
-</span>
-</code></pre>
+</span></code></pre>
 <p>A fast Chess and Chess960 move generation library in Rust suitable for Chess engines.</p>
 <h2><a href="https://analog-hors.github.io/webperft/"><code>webperft</code></a></h2>
 <img src="img/webperft.png" style="width: 50%;" alt="webperft screenshot">
@@ -45,24 +19,18 @@
 <img src="img/cold_clear_web.png" style="width: 50%;" alt="cold-clear-web screenshot">
 <p>A web client for a WebAssembly port of MinusKelvin's <a href="https://github.com/MinusKelvin/cold-clear"><code>cold-clear</code></a> Tetris AI.</p>
 <h2>When the</h2>
-<pre style="background-color:#2b303b;"><code class="language-python">
-<span style="color:#c0c5ce;">w=</span><span style="color:#b48ead;">lambda </span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">:[m </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">m </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">[</span><span style="color:#d08770;">448</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">292</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">273</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">146</span><span style="color:#c0c5ce;">,*</span><span style="color:#b48ead;">b</span><span style="color:#c0c5ce;">"</span><span style="color:#a3be8c;">TI8</span><span style="color:#c0c5ce;">",</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]</span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]&amp;m==m][</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]
-</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">d</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">):[</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">.XO</span><span style="color:#c0c5ce;">"[b[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]&gt;&gt;i&amp;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">|b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]*</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">&gt;&gt;i&amp;</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">],</span><span style="color:#bf616a;">end</span><span style="color:#c0c5ce;">="  </span><span style="color:#96b5b4;">\n</span><span style="color:#c0c5ce;">"[i%</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">])</span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">i </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">range</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">9</span><span style="color:#c0c5ce;">)]
+<pre style="background-color:#2b303b;"><code class="language-python"><span style="color:#c0c5ce;">w=</span><span style="color:#b48ead;">lambda </span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">:[m </span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">m </span><span style="color:#b48ead;">in</span><span style="color:#c0c5ce;">[</span><span style="color:#d08770;">448</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">292</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">273</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">146</span><span style="color:#c0c5ce;">,*</span><span style="color:#b48ead;">b</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">TI8</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]</span><span style="color:#b48ead;">if </span><span style="color:#c0c5ce;">b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]&amp;m==m][</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]
+</span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">d</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">):[</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">.XO</span><span style="color:#c0c5ce;">&quot;[b[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]&gt;&gt;i&amp;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">|b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]*</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">&gt;&gt;i&amp;</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">],</span><span style="color:#bf616a;">end</span><span style="color:#c0c5ce;">=&quot;  </span><span style="color:#96b5b4;">\n</span><span style="color:#c0c5ce;">&quot;[i%</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">])</span><span style="color:#b48ead;">for </span><span style="color:#c0c5ce;">i </span><span style="color:#b48ead;">in </span><span style="color:#96b5b4;">range</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">9</span><span style="color:#c0c5ce;">)]
 </span><span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">a</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">b</span><span style="color:#c0c5ce;">):
 </span><span style="color:#c0c5ce;"> </span><span style="color:#b48ead;">if </span><span style="color:#8fa1b3;">w</span><span style="color:#c0c5ce;">(b):</span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;">-</span><span style="color:#d08770;">.5
 </span><span style="color:#c0c5ce;"> u,v=b;m=</span><span style="color:#d08770;">511</span><span style="color:#c0c5ce;">^u^v;p=m,</span><span style="color:#d08770;">0
 </span><span style="color:#c0c5ce;"> </span><span style="color:#b48ead;">while </span><span style="color:#c0c5ce;">c:=m&amp;-m:m^=c;p=</span><span style="color:#96b5b4;">min</span><span style="color:#c0c5ce;">(p,(</span><span style="color:#8fa1b3;">a</span><span style="color:#c0c5ce;">([v,u|c]),c))
 </span><span style="color:#c0c5ce;"> b[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]|=p[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">];</span><span style="color:#b48ead;">return</span><span style="color:#c0c5ce;">-p[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]
 </span><span style="color:#c0c5ce;">t,*b=</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">0
-</span><span style="color:#c0c5ce;">s=</span><span style="color:#96b5b4;">input</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">P: </span><span style="color:#c0c5ce;">")&gt;"</span><span style="color:#a3be8c;">1</span><span style="color:#c0c5ce;">"
-</span><span style="color:#b48ead;">while </span><span style="color:#8fa1b3;">w</span><span style="color:#c0c5ce;">(b)|t&lt;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">:s^=</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;[a,d][s](b);u,v=b;b=[v,u|s&lt;&lt;int(s and </span><span style="color:#96b5b4;">input</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">&gt;</span><span style="color:#c0c5ce;">"))];t=v|b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]==</span><span style="color:#d08770;">511
+</span><span style="color:#c0c5ce;">s=</span><span style="color:#96b5b4;">input</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">P: </span><span style="color:#c0c5ce;">&quot;)&gt;&quot;</span><span style="color:#a3be8c;">1</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#b48ead;">while </span><span style="color:#8fa1b3;">w</span><span style="color:#c0c5ce;">(b)|t&lt;</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">:s^=</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;[a,d][s](b);u,v=b;b=[v,u|s&lt;&lt;int(s and </span><span style="color:#96b5b4;">input</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">&gt;</span><span style="color:#c0c5ce;">&quot;))];t=v|b[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">]==</span><span style="color:#d08770;">511
 </span><span style="color:#8fa1b3;">d</span><span style="color:#c0c5ce;">([b[s],b[~s]])
-</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">("</span><span style="color:#a3be8c;">LD</span><span style="color:#c0c5ce;">"[t])
-</span>
-</code></pre>
+</span><span style="color:#96b5b4;">print</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">LD</span><span style="color:#c0c5ce;">&quot;[t])
+</span></code></pre>
 <p>A Python program that does</p>
-</div>
-        </div>
-    
-
-</body></html>
+</div></div></body></html>
