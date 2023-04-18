@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   width="512"
+   height="512"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="256" height="256" fill="#C7A1CB" />
+  <rect x="0" y="256" width="256" height="256" fill="#8b6994" />
+  <rect x="256" y="0" width="256" height="256" fill="#8b6994" />
+  <rect x="256" y="256" width="256" height="256" fill="#C7A1CB" />
+</svg>

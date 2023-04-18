@@ -17,7 +17,7 @@ pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&s
                 link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&family=JetBrains+Mono&display=swap" rel="stylesheet";
                 link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet";
                 link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet";
-                link href="./favicon.svg" rel="icon";
+                link href="../shared/favicon.svg" rel="icon";
             }
             body {
                 header {
