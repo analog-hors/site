@@ -86,3 +86,9 @@ blockquote {
 blockquote > * {
     margin: 0;
 }
+
+.colored-block {
+    background: #523f56;
+    padding: 0.5em 1em;
+    margin: 0;
+}

@@ -36,6 +36,29 @@ pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&s
                     div id="content" {
                         h1 { (title) }
                         (content)
+                        br;
+                        br;
+                        p .colored-block {
+                            em {
+                                "Unless stated otherwise, content on this website is licensed with "
+                                a href="https://creativecommons.org/licenses/by-nc/4.0/" {
+                                    "CC BY-NC 4.0"
+                                }
+                                ". Source code is licensed under "
+                                a href="https://spdx.org/licenses/MIT.html" {
+                                    "the MIT license"
+                                }
+                                ". Cited materials belong to their respective owners."
+                                br;
+                                br;
+                                "Like what I do? "
+                                a href="https://ko-fi.com/analog_hors" {
+                                    "Support me on Ko-fi!"
+                                }
+                            }
+                        }
+                        br;
+                        br;
                     }
                 }
             }
