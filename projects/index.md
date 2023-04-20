@@ -10,7 +10,7 @@ $ cargo run --release --example perft -- 7
      Running `target\release\examples\perft.exe 7`
 3195901860 nodes in 10.05s (318045465 nps)
 ```
-A fast Chess and Chess960 move generation library in Rust suitable for Chess engines.
+A fast Chess and Chess960 move generation library written in Rust suitable for Chess engines.
 
 ## [`webperft`](https://analog-hors.github.io/webperft/)
 <img src="img/webperft.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="webperft screenshot">
