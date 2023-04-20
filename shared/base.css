@@ -6,8 +6,8 @@ body {
 }
 
 header {
-    padding: 0.5rem;
-    font-size: 1.25em;
+    padding: 0.5em;
+    font-size: min(1.25em, 4.5vw);
     background-color: #523f56;
     text-align: center;
 }
@@ -21,7 +21,7 @@ header > code {
 }
 
 #content {
-    max-width: 60rem;
+    max-width: 60em;
     margin: auto;
 }
 
