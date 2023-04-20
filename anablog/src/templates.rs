@@ -89,7 +89,7 @@ pub fn writing_index_page<'m>(pages: &SitePages) -> PreEscaped<String> {
     let content = html! {
         p {
             "Also check out my "
-            a href="./feed.rss" {
+            a href="./feed.xml" {
                 "RSS feed"
             }
             " if you use that."

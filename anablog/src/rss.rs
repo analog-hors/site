@@ -75,7 +75,7 @@ pub fn rss_feed(pages: &SitePages) -> String {
                 description { "Analog's Blog" }
                 link { "https://analog-hors.github.io/site/" }
                 language { "en" }
-                atom:link href="https://analog-hors.github.io/writing/feed.rss" rel="self" type="application/rss+xml" {}
+                atom:link href="https://analog-hors.github.io/writing/feed.xml" rel="self" type="application/rss+xml" {}
 
                 [for (entry, page, post) in pages.writings() {
                     let datetime = post.date.and_hms_opt(0, 0, 0).unwrap();
