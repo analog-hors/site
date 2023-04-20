@@ -294,7 +294,7 @@ fn take_indirect_indexed(&mut self) -> u16 {
 }
 ```
 
-After that, it was fairly straightforward to implement the instructionss with the help of [6502.org](http://6502.org/tutorials/6502opcodes.html) and [Masswerk](https://www.masswerk.at/6502/6502_instruction_set.html).
+After that, it was fairly straightforward to implement the instructions with the help of [6502.org](http://6502.org/tutorials/6502opcodes.html) and [Masswerk](https://www.masswerk.at/6502/6502_instruction_set.html).
 
 Some things I encountered while implementing the emulator:
 - Both of the linked pages just lie about `BRK` not setting the interrupt disable flag. 6502.org tells you that `BRK` only affects the `B` flag, while Masswerk claims that `BRK` doesn't set the interrupt disable flag automatically. However, it *does*, and the diagram on the Masswerk page even says that it enables the flag, contradicting the earlier statement.
