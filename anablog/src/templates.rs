@@ -3,6 +3,8 @@ use maud::{html, DOCTYPE, PreEscaped};
 use crate::page::PageMetadata;
 use crate::site_pages::SitePages;
 
+const ANALYTICS_SCRIPT: PreEscaped<&str> = PreEscaped(include_str!("analytics.html"));
+
 pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&str>) -> PreEscaped<String> {
     html! {
         (DOCTYPE)
@@ -61,6 +63,7 @@ pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&s
                         br;
                     }
                 }
+                (ANALYTICS_SCRIPT)
             }
         }
     }
