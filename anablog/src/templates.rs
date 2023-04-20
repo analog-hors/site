@@ -1,7 +1,7 @@
 use maud::{html, DOCTYPE, PreEscaped};
 
 use crate::page::PageMetadata;
-use crate::page_entry::PageEntry;
+use crate::site_pages::SitePages;
 
 pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&str>) -> PreEscaped<String> {
     html! {
@@ -82,18 +82,16 @@ pub fn content_page(content: PreEscaped<String>, meta: &PageMetadata) -> PreEsca
     base_page(content, title, page_title)
 }
 
-pub fn writing_index_page<'m>(page_entries: &[PageEntry]) -> PreEscaped<String> {
-    let mut writings = page_entries.iter()
-        .filter_map(|entry| {
-            let page = entry.page.as_ref()?;
-            let post = page.meta.post.as_ref()?;
-            Some((entry, page, post))
-        })
-        .collect::<Vec<_>>();
-    writings.sort_by_key(|(_, page, post)| (std::cmp::Reverse(&post.date), &page.meta.title));
-
+pub fn writing_index_page<'m>(pages: &SitePages) -> PreEscaped<String> {
     let content = html! {
-        @for (entry, page, post) in writings {
+        p {
+            "Also check out my "
+            a href="./feed.rss" {
+                "RSS feed"
+            }
+            " if you use that."
+        }
+        @for (entry, page, post) in pages.writings() {
             h2 {
                 a href={ "../" (entry.name) "/" } {
                     (page.meta.title)

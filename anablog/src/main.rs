@@ -1,20 +1,22 @@
 mod page;
-mod page_entry;
+mod site_pages;
 mod templates;
+mod rss;
 
-use page_entry::PageEntry;
+use site_pages::SitePages;
 
 fn main() -> std::io::Result<()> {
-    let entries = page_entry::collect_page_entries()?;
-    update_entries(&entries)?;
-    build_writing_index_page(&entries)?;
+    let pages = SitePages::collect()?;
+    update_site_pages(&pages)?;
+    build_writing_index_page(&pages)?;
+    build_rss_feed(&pages)?;
     eprintln!("Done.");
     Ok(())
 }
 
-fn update_entries(entries: &[PageEntry]) -> std::io::Result<()> {
+fn update_site_pages(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Updating pages...");
-    for entry in entries {
+    for entry in &pages.entries {
         if entry.needs_update {
             if let Some(page) = &entry.page {
                 let html = page.to_html();
@@ -30,9 +32,16 @@ fn update_entries(entries: &[PageEntry]) -> std::io::Result<()> {
     Ok(())
 }
 
-fn build_writing_index_page(entries: &[PageEntry]) -> std::io::Result<()> {
+fn build_writing_index_page(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Building writing index page...");
-    let html = crate::templates::writing_index_page(&entries).into_string();
+    let html = crate::templates::writing_index_page(pages).into_string();
     std::fs::write("writing/index.html", html.as_bytes())?;
+    Ok(())
+}
+
+fn build_rss_feed(pages: &SitePages) -> std::io::Result<()> {
+    eprintln!("Building RSS feed...");
+    let feed = crate::rss::rss_feed(&pages);
+    std::fs::write("writing/feed.rss", feed.as_bytes())?;
     Ok(())
 }

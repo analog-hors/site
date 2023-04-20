@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use chrono::NaiveDate;
 use comrak::{ComrakOptions, ComrakPlugins};
 use comrak::plugins::syntect::SyntectAdapter;
 use maud::PreEscaped;
@@ -13,7 +14,7 @@ pub struct PageMetadata {
 #[derive(Debug, Deserialize)]
 pub struct PostMetadata {
     pub author: String,
-    pub date: String,
+    pub date: NaiveDate,
     pub desc: String,
 }
 
