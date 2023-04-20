@@ -17,16 +17,16 @@ fn main() -> std::io::Result<()> {
 fn update_site_pages(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Updating pages...");
     for entry in &pages.entries {
-        if entry.needs_update {
-            if let Some(page) = &entry.page {
+        if let Some(page) = &entry.page {
+            if entry.needs_update {
                 let html = page.to_html();
                 std::fs::write(&entry.html_path, html.as_bytes())?;
                 eprintln!("[UPDATED] {} - Updated.", entry.name);
             } else {
-                eprintln!("[ERRORED] {} - Invalid page!", entry.name);
+                eprintln!("[SKIPPED] {} - Up to date.", entry.name);
             }
         } else {
-            eprintln!("[SKIPPED] {} - Up to date.", entry.name);
+            eprintln!("[ERRORED] {} - Invalid page!", entry.name);
         }
     }
     Ok(())
