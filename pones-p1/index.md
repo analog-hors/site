@@ -3,7 +3,7 @@ title: "Writing an NES emulator: Part 1 - The 6502 CPU"
 post:
   author: "Analog Hors"
   date: "2023-04-02"
-  desc: "Documenting my journey in developing an emulator for the MOS 6502 CPU."
+  desc: "After an immense amount of time of not sticking with a project, I finally decided to pick up writing an NES emulator again, a project which I dropped years ago. I'm not really sure I'll pull through with it this time, but I did get the CPU implemented: The ubiquitous MOS Technology 6502."
 ---
 
 After an immense amount of time of not sticking with a project, I finally decided to pick up writing an NES emulator again, a project which I dropped years ago. You can find the codebase [here](https://github.com/analog-hors/pones). I'm not really sure I'll pull through with it this time, but I *did* get the CPU implemented: The ubiquitous [MOS Technology 6502](https://en.wikipedia.org/wiki/MOS_Technology_6502). Released in 1975, this piece of silicon found its way into some of the most influential consumer electronics of the 80s, with the Atari 2600, NES, Commodore 64, and Apple II all containing either the 6502 itself or one of its many variants. It should therefore be rather well documented, and it seems like a reasonable starting point for emulation. The NES was chosen rather arbitrarily, but it seemed like a good mix of approachable and "cool".
