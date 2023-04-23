@@ -60,7 +60,7 @@ pub fn base(title: &str, is_home: bool, content: &PreEscaped<String>, metas: &Pr
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
-                // (metas)
+                (metas)
                 @match is_home {
                     true => title { "Analog Hors" },
                     false => title { "Analog Hors - " (title) },
@@ -125,12 +125,15 @@ pub fn post(meta: &PostMeta, name: &str, content: &PreEscaped<String>) -> PreEsc
 
 pub fn opengraph_metas(name: &str, title: &str, desc: &str, kind: &str) -> PreEscaped<String> {
     html! {
+        meta name="theme-color" content="#C7A1CB";
         meta property="og:type" content=(kind);
         meta property="og:title" content=(title);
         meta property="og:description" content=(desc);
         meta property="og:url" content={"https://analog-hors.github.io/" (name) "/"};
         meta property="og:site_name" content="Analog Hors";
-        meta property="og:image" content="https://analog-hors.github.io/shared/favicon.svg";
+        meta property="og:image" content="https://analog-hors.github.io/site/shared/favicon.png";
+        meta property="og:image:width" content="512";
+        meta property="og:image:height" content="512";
         meta property="og:locale" content="en-US";
     }
 }
