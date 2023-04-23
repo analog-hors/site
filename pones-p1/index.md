@@ -1,6 +1,6 @@
 ---
-title: "Writing an NES emulator: Part 1 - The 6502 CPU"
 post:
+  title: "Writing an NES emulator: Part 1 - The 6502 CPU"
   author: "Analog Hors"
   date: "2023-04-02"
   desc: "After an immense amount of time of not sticking with a project, I finally decided to pick up writing an NES emulator again, a project which I dropped years ago. I'm not really sure I'll pull through with it this time, but I did get the CPU implemented: The ubiquitous MOS Technology 6502."

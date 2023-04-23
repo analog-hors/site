@@ -1,5 +1,7 @@
 ---
-title: "Projects"
+basic:
+  title: "Projects"
+  desc: "Stuff I've worked on."
 ---
 
 ## [`cozy-chess`](https://github.com/analog-hors/cozy-chess)

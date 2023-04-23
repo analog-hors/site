@@ -1,7 +1,8 @@
 mod page;
 mod site_pages;
-mod templates;
 mod rss;
+mod md;
+mod templates;
 
 use site_pages::SitePages;
 
@@ -18,7 +19,7 @@ fn update_site_pages(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Updating pages...");
     for entry in &pages.entries {
         if let Some(page) = &entry.page {
-            let html = page.to_html();
+            let html = page.to_html(&entry.name);
             let path = format!("{}/index.html", entry.name);
             std::fs::write(path, html.as_bytes())?;
             eprintln!("[UPDATED] {} - Updated.", entry.name);
@@ -31,7 +32,7 @@ fn update_site_pages(pages: &SitePages) -> std::io::Result<()> {
 
 fn build_writing_index_page(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Building writing index page...");
-    let html = crate::templates::writing_index_page(pages).into_string();
+    let html = pages.writing_index_page();
     std::fs::write("writing/index.html", html.as_bytes())?;
     Ok(())
 }

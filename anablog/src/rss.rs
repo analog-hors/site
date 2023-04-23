@@ -77,13 +77,13 @@ pub fn rss_feed(pages: &SitePages) -> String {
                 language { "en" }
                 atom:link href="https://analog-hors.github.io/site/writing/feed.xml" rel="self" type="application/rss+xml" {}
 
-                [for (entry, page, post) in pages.writings() {
+                [for (entry, _, post) in pages.writings() {
                     let datetime = post.date.and_hms_opt(0, 0, 0).unwrap();
                     let datetime = DateTime::<Utc>::from_utc(datetime, Utc);
                     let datetime = datetime.to_rfc2822();
                     xml! {
                         item {
-                            title { (&page.meta.title) }
+                            title { (&post.title) }
                             description { (&post.desc) }
                             link { "https://analog-hors.github.io/site/" (&entry.name) "/" }
                             pubDate { (&datetime) }

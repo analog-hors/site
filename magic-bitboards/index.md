@@ -1,6 +1,6 @@
 ---
-title: "Magical Bitboards and How to Find Them: Sliding move generation in chess"
 post:
+  title: "Magical Bitboards and How to Find Them: Sliding move generation in chess"
   author: "Analog Hors"
   date: "2022-09-24"
   desc: "Efficiently generating moves for sliding pieces is a tricky problem in chess programming. The obvious strategy is to iterate in each movement direction one square at a time until an obstruction is reached. However, there is a much, much faster way: Magic Bitboards. This article explains the theory, goes through a simple implementation, and notes improvements made in real-world code."

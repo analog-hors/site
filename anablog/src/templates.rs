@@ -1,64 +1,82 @@
-use maud::{html, DOCTYPE, PreEscaped};
+use maud::{html, PreEscaped, DOCTYPE};
 
-use crate::page::PageMetadata;
-use crate::site_pages::SitePages;
+use crate::page::{BasicMeta, PostMeta};
 
 const ANALYTICS_SCRIPT: PreEscaped<&str> = PreEscaped(include_str!("analytics.html"));
 
-pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&str>) -> PreEscaped<String> {
+fn styles() -> PreEscaped<String> {
+    html! {
+        link href="../shared/base.css" rel="stylesheet";
+        link rel="preconnect" href="https://fonts.googleapis.com";
+        link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="";
+        link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&family=JetBrains+Mono&display=swap" rel="stylesheet";
+        link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet";
+        link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet";
+    }
+}
+
+fn header() -> PreEscaped<String> {
+    html! {
+        header {
+            code {
+                a href="../home/" { "analog-hors" }
+                (PreEscaped("&nbsp;-&nbsp;"))
+                a href="../projects/" { "projects" }
+                (PreEscaped("&nbsp;-&nbsp;"))
+                a href="../writing" { "writing" }
+            }
+        }
+    }
+}
+
+fn end_block() -> PreEscaped<String> {
+    html! {
+        p .colored-block {
+            em {
+                "Unless stated otherwise, content on this website is licensed with "
+                a href="https://creativecommons.org/licenses/by-nc/4.0/" {
+                    "CC BY-NC 4.0"
+                }
+                ". Source code is licensed under "
+                a href="https://spdx.org/licenses/MIT.html" {
+                    "the MIT license"
+                }
+                ". Cited materials belong to their respective owners."
+                br;
+                br;
+                "Like what I do? "
+                a href="https://ko-fi.com/analog_hors" {
+                    "Support me on Ko-fi!"
+                }
+            }
+        }
+    }
+}
+
+pub fn base(title: &str, is_home: bool, content: &PreEscaped<String>, metas: &PreEscaped<String>) -> PreEscaped<String> {
     html! {
         (DOCTYPE)
         html {
             head {
                 meta charset="utf-8";
                 meta name="viewport" content="width=device-width, initial-scale=1.0";
-                @match page_title {
-                    Some(page_title) => title { (page_title) },
-                    None => title { "Analog Hors - " (title) },
+                // (metas)
+                @match is_home {
+                    true => title { "Analog Hors" },
+                    false => title { "Analog Hors - " (title) },
                 }
-                link href="../shared/base.css" rel="stylesheet";
-                link rel="preconnect" href="https://fonts.googleapis.com";
-                link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="";
-                link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&family=JetBrains+Mono&display=swap" rel="stylesheet";
-                link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet";
-                link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet";
+                (styles())
                 link href="../shared/favicon.svg" rel="icon";
             }
             body {
-                header {
-                    code {
-                        a href="../home/" { "analog-hors" }
-                        (PreEscaped("&nbsp;-&nbsp;"))
-                        a href="../projects/" { "projects" }
-                        (PreEscaped("&nbsp;-&nbsp;"))
-                        a href="../writing" { "writing" }
-                    }
-                }
+                (header())
                 div id="content-container" {
                     div id="content" {
                         h1 { (title) }
                         (content)
                         br;
                         br;
-                        p .colored-block {
-                            em {
-                                "Unless stated otherwise, content on this website is licensed with "
-                                a href="https://creativecommons.org/licenses/by-nc/4.0/" {
-                                    "CC BY-NC 4.0"
-                                }
-                                ". Source code is licensed under "
-                                a href="https://spdx.org/licenses/MIT.html" {
-                                    "the MIT license"
-                                }
-                                ". Cited materials belong to their respective owners."
-                                br;
-                                br;
-                                "Like what I do? "
-                                a href="https://ko-fi.com/analog_hors" {
-                                    "Support me on Ko-fi!"
-                                }
-                            }
-                        }
+                        (end_block())
                         br;
                         br;
                     }
@@ -69,44 +87,50 @@ pub fn base_page(content: PreEscaped<String>, title: &str, page_title: Option<&s
     }
 }
 
-pub fn content_page(content: PreEscaped<String>, meta: &PageMetadata) -> PreEscaped<String> {
+pub fn basic(meta: &BasicMeta, name: &str, content: &PreEscaped<String>) -> PreEscaped<String> {
+    base(
+        &meta.title,
+        meta.is_home,
+        content,
+        &opengraph_metas(
+            name,
+            &meta.title,
+            &meta.desc,
+            "website"
+        )
+    )
+}
+
+pub fn post(meta: &PostMeta, name: &str, content: &PreEscaped<String>) -> PreEscaped<String> {
     let content = html! {
-        @if let Some(post) = &meta.post {
-            p {
-                i class="fa-regular fa-user" {} " " (post.author)
-                (PreEscaped("&nbsp;&nbsp;&nbsp;"))
-                i class="fa-regular fa-clock" {} " " (post.date)
-            }
+        p {
+            i class="fa-regular fa-user" {} " " (meta.author)
+            (PreEscaped("&nbsp;&nbsp;&nbsp;"))
+            i class="fa-regular fa-clock" {} " " (meta.date)
         }
         (content)
     };
-    let title = &meta.title;
-    let page_title = meta.page_title.as_deref();
-    base_page(content, title, page_title)
+    base(
+        &meta.title,
+        false,
+        &content,
+        &opengraph_metas(
+            name,
+            &meta.title,
+            &meta.desc,
+            "article"
+        )
+    )
 }
 
-pub fn writing_index_page<'m>(pages: &SitePages) -> PreEscaped<String> {
-    let content = html! {
-        p {
-            "Also check out my "
-            a href="./feed.xml" {
-                "RSS feed"
-            }
-            " if you use that."
-        }
-        @for (entry, page, post) in pages.writings() {
-            h2 {
-                a href={ "../" (entry.name) "/" } {
-                    (page.meta.title)
-                }
-            }
-            p {
-                i class="fa-regular fa-user" {} " " (post.author)
-                (PreEscaped("&nbsp;&nbsp;&nbsp;"))
-                i class="fa-regular fa-clock" {} " " (post.date)
-            }
-            p { (post.desc) }
-        }
-    };
-    base_page(content, "Stuff I've written", None)
+pub fn opengraph_metas(name: &str, title: &str, desc: &str, kind: &str) -> PreEscaped<String> {
+    html! {
+        meta property="og:type" content=(kind);
+        meta property="og:title" content=(title);
+        meta property="og:description" content=(desc);
+        meta property="og:url" content={"https://analog-hors.github.io/" (name) "/"};
+        meta property="og:site_name" content="Analog Hors";
+        meta property="og:image" content="https://analog-hors.github.io/shared/favicon.svg";
+        meta property="og:locale" content="en-US";
+    }
 }

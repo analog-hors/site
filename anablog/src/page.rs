@@ -1,48 +1,49 @@
+use maud::PreEscaped;
 use serde::Deserialize;
 use chrono::NaiveDate;
-use comrak::{ComrakOptions, ComrakPlugins};
-use comrak::plugins::syntect::SyntectAdapter;
-use maud::PreEscaped;
 
 #[derive(Debug, Deserialize)]
-pub struct PageMetadata {
+pub struct BasicMeta {
     pub title: String,
-    pub page_title: Option<String>,
-    pub post: Option<PostMetadata>
+    #[serde(default)]
+    pub is_home: bool,
+    pub desc: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct PostMetadata {
-    pub author: String,
+pub struct PostMeta {
+    pub title: String,
+    pub author: String, 
     pub date: NaiveDate,
     pub desc: String,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PageMeta {
+    Basic(BasicMeta),
+    Post(PostMeta),
+}
+
 #[derive(Debug)]
 pub struct Page {
-    pub meta: PageMetadata,
-    pub content: String
+    pub meta: PageMeta,
+    pub content: PreEscaped<String>
 }
 
 impl Page {
     pub fn new(page: &str) -> Option<Self> {
         let (meta, content) = page.split_once("\n---")?;
-        let meta = serde_yaml::from_str(&meta).ok()?;
-        let content = content.to_owned();
+        let meta = serde_yaml::from_str(meta).unwrap();//.ok()?;
+        let content = crate::md::render_md(content);
         Some(Self { meta, content })
     }
 
-    pub fn to_html(&self) -> String {
-        let content = render_md(&self.content);
-        crate::templates::content_page(content, &self.meta).into_string()
+    pub fn to_html(&self, name: &str) -> String {
+        let html = match &self.meta {
+            PageMeta::Basic(basic) => crate::templates::basic(basic, name, &self.content),
+            PageMeta::Post(post) => crate::templates::post(post, name, &self.content),
+        };
+        html.into_string()
     }
-}
-
-fn render_md(md: &str) -> PreEscaped<String> {
-    let highlighter = SyntectAdapter::new("base16-ocean.dark");
-    let mut options = ComrakOptions::default();
-    let mut plugins = ComrakPlugins::default();
-    options.render.unsafe_ = true;
-    plugins.render.codefence_syntax_highlighter = Some(&highlighter);
-    PreEscaped(comrak::markdown_to_html_with_plugins(md, &options, &plugins))
 }

@@ -1,6 +1,8 @@
 ---
-title: "Analog Hors"
-page_title: "Analog Hors"
+basic:
+  title: "Analog Hors"
+  is_home: true
+  desc: "Analog Hors' website."
 ---
 
 code horse.

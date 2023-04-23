@@ -10,4 +10,4 @@ chrono = { version = "0.4.24", features = ["serde"] }
 comrak = "0.18.0"
 maud = "0.25.0"
 serde = { version = "1.0.160", features = ["derive"] }
-serde_yaml = "0.9.21"
+serde_yaml = "0.8.26"
