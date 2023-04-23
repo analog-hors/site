@@ -18,13 +18,10 @@ fn update_site_pages(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Updating pages...");
     for entry in &pages.entries {
         if let Some(page) = &entry.page {
-            if entry.needs_update {
-                let html = page.to_html();
-                std::fs::write(&entry.html_path, html.as_bytes())?;
-                eprintln!("[UPDATED] {} - Updated.", entry.name);
-            } else {
-                eprintln!("[SKIPPED] {} - Up to date.", entry.name);
-            }
+            let html = page.to_html();
+            let path = format!("{}/index.html", entry.name);
+            std::fs::write(path, html.as_bytes())?;
+            eprintln!("[UPDATED] {} - Updated.", entry.name);
         } else {
             eprintln!("[ERRORED] {} - Invalid page!", entry.name);
         }
