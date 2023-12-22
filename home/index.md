@@ -16,4 +16,4 @@ Check out my [projects page](../projects/) and my [blog](../writing/)!
 
 - Email: `"analog-pone" + "-4ef8"` at the domain `"outlook" + ".com"`
 
-- Discord: `"Analog Hors" + "#6009"`
+- Discord: `analog_hors`
