@@ -2,3 +2,4 @@
 members = [
     "anablog"
 ]
+resolver = "2"

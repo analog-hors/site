@@ -39,7 +39,7 @@ fn build_writing_index_page(pages: &SitePages) -> std::io::Result<()> {
 
 fn build_rss_feed(pages: &SitePages) -> std::io::Result<()> {
     eprintln!("Building RSS feed...");
-    let feed = crate::rss::rss_feed(&pages);
+    let feed = crate::rss::rss_feed(pages);
     std::fs::write("writing/feed.xml", feed.as_bytes())?;
     Ok(())
 }

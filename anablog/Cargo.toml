@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 chrono = { version = "0.4.24", features = ["serde"] }
-comrak = "0.18.0"
+comrak = "0.19.0"
 maud = "0.25.0"
 serde = { version = "1.0.160", features = ["derive"] }
 serde_yaml = "0.8.26"

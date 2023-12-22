@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::{Utc, TimeZone};
 
 use crate::site_pages::SitePages;
 
@@ -79,7 +79,7 @@ pub fn rss_feed(pages: &SitePages) -> String {
 
                 [for (entry, _, post) in pages.writings() {
                     let datetime = post.date.and_hms_opt(0, 0, 0).unwrap();
-                    let datetime = DateTime::<Utc>::from_utc(datetime, Utc);
+                    let datetime = Utc.from_utc_datetime(&datetime);
                     let datetime = datetime.to_rfc2822();
                     xml! {
                         item {
