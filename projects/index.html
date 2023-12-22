@@ -1,4 +1,8 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#C7A1CB"><meta property="og:type" content="website"><meta property="og:title" content="Projects"><meta property="og:description" content="Stuff I've worked on."><meta property="og:url" content="https://analog-hors.github.io/projects/"><meta property="og:site_name" content="Analog Hors"><meta property="og:image" content="https://analog-hors.github.io/site/shared/favicon.png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><meta property="og:locale" content="en-US"><title>Analog Hors - Projects</title><link href="../shared/base.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet"><link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet"><link href="../shared/favicon.svg" rel="icon"></head><body><header><code><a href="../home/">analog-hors</a>&nbsp;-&nbsp;<a href="../projects/">projects</a>&nbsp;-&nbsp;<a href="../writing">writing</a></code></header><div id="content-container"><div id="content"><h1>Projects</h1><h2><a href="https://github.com/analog-hors/cozy-chess"><code>cozy-chess</code></a></h2>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#C7A1CB"><meta property="og:type" content="website"><meta property="og:title" content="Projects"><meta property="og:description" content="Stuff I've worked on."><meta property="og:url" content="https://analog-hors.github.io/projects/"><meta property="og:site_name" content="Analog Hors"><meta property="og:image" content="https://analog-hors.github.io/site/shared/favicon.png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512"><meta property="og:locale" content="en-US"><title>Analog Hors - Projects</title><link href="../shared/base.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital@0;1&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="../shared/fontawesome/css/fontawesome.min.css" rel="stylesheet"><link href="../shared/fontawesome/css/regular.min.css" rel="stylesheet"><link href="../shared/favicon.svg" rel="icon"></head><body><header><code><a href="../home/">analog-hors</a>&nbsp;-&nbsp;<a href="../projects/">projects</a>&nbsp;-&nbsp;<a href="../writing">writing</a></code></header><div id="content-container"><div id="content"><h1>Projects</h1><h2><a href="https://github.com/analog-hors/Boychesser"><code>Boychesser</code></a></h2>
+<img src="img/boychesser.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="boychesser screenshot">
+<p>A very small yet strong C# chess engine and the winner of <a href="https://www.youtube.com/watch?v=Ne40a5LkK6A">Sebastian Lague's Tiny Chess Bots Challenge</a>. Around 2770 Elo on the <a href="https://www.computerchess.org.uk/ccrl/404/">CCRL blitz list</a>. Joint project with <a href="https://minuskelvin.net/">MinusKelvin</a> and a few other friends.</p>
+<br>
+<h2><a href="https://github.com/analog-hors/cozy-chess"><code>cozy-chess</code></a></h2>
 <pre style="background-color:#2b303b;"><code><span style="color:#c0c5ce;">$ cargo run --release --example perft -- 7
 </span><span style="color:#c0c5ce;">   Compiling cozy-chess v0.3.0
 </span><span style="color:#c0c5ce;">    Finished release [optimized] target(s) in 6.37s
@@ -6,27 +10,36 @@
 </span><span style="color:#c0c5ce;">3195901860 nodes in 10.05s (318045465 nps)
 </span></code></pre>
 <p>A fast Chess and Chess960 move generation library written in Rust suitable for Chess engines.</p>
+<br>
 <h2><a href="https://analog-hors.github.io/webperft/"><code>webperft</code></a></h2>
 <img src="img/webperft.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="webperft screenshot">
 <p>A Chess and Chess960 move generation testing utility that helps you easily check <a href="https://www.chessprogramming.org/Perft"><code>perft</code></a> results in the browser.</p>
+<br>
 <h2><a href="https://github.com/analog-hors/tantabus"><code>tantabus</code></a></h2>
 <p>A superhuman Chess and Chess960 engine written in Rust. Built on top of <code>cozy-chess</code>.</p>
+<br>
 <h2><a href="https://analog-hors.github.io/lunatic-web/"><code>lunatic-web</code></a></h2>
 <img src="img/lunatic_web.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="lunatic-web screenshot">
 <p>A web client for a WebAssembly port of Lunatic, the much weaker predecessor to Tantabus.</p>
+<br>
 <h2><a href="https://analog-hors.github.io/cold-clear-web/"><code>cold-clear-web</code></a></h2>
 <img src="img/cold_clear_web.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="cold-clear-web screenshot">
 <p>A web client for a WebAssembly port of MinusKelvin's <a href="https://github.com/MinusKelvin/cold-clear"><code>cold-clear</code></a> Tetris AI.</p>
+<br>
 <h2><a href="https://github.com/analog-hors/pones"><code>pones</code></a></h2>
 <p>A work in progress NES emulator written in Rust.</p>
+<br>
 <h2><a href="https://github.com/analog-hors/pones"><code>ColdTaco</code></a></h2>
 <img src="img/cold_taco.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="screenshot of ColdTaco playing NES tetris">
 <p>A C# program that leverages the <a href="https://nintaco.com/">Nintaco API</a> to get <a href="https://github.com/MinusKelvin/cold-clear"><code>cold-clear</code></a> to play NES Tetris.</p>
+<br>
 <h2><a href="https://wasm4.org/play/glowfish-chess"><code>glowfish</code></a></h2>
 <img src="img/glowfish.png" style="max-width: 80%; height: 15em; object-fit: contain;" alt="glowfish screenshot">
 <p>A simple <a href="https://wasm4.org/">WASM-4</a> chess game with an optional &quot;Vs CPU&quot; mode.</p>
+<br>
 <h2><a href="https://github.com/analog-hors/nnue-rs"><code>nnue-rs</code></a></h2>
 <p>A Rust library for the inference of <a href="https://stockfishchess.org/blog/2020/introducing-nnue-evaluation">Stockfish NNUE</a> neural networks.</p>
+<br>
 <h2><a href="https://github.com/analog-hors/mnist-digit-nn"><code>mnist-digit-nn</code></a></h2>
 <p>A simple neural network-based digit classifier based on the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST database</a>. Written as an excerise to better understand backpropagation and neural networks.</p>
 <br><br><p class="colored-block"><em>Unless stated otherwise, content on this website is licensed with <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>. Source code is licensed under <a href="https://spdx.org/licenses/MIT.html">the MIT license</a>. Cited materials belong to their respective owners.<br><br>Like what I do? <a href="https://ko-fi.com/analog_hors">Support me on Ko-fi!</a></em></p><br><br></div></div><!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "95bdfcdeb8214bc189de529685f895c3"}'></script><!-- End Cloudflare Web Analytics --></body></html>
